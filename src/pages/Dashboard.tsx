@@ -7,6 +7,7 @@ import IdentityForm from "@/components/IdentityForm";
 import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
 import ToolsPanel from "@/components/ToolsPanel";
 import StatsCards from "@/components/StatsCards";
+import { SearchResultsIntelligence } from "@/components/SearchResultsIntelligence";
 import AlertHistory from "@/pages/AlertHistory";
 
 interface DashboardProps {
@@ -62,8 +63,8 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm">
+    <div className="neon-bg min-h-screen bg-background">
+      <header className="sticky top-0 z-10 border-b border-border bg-card/80 backdrop-blur-sm neon-outline">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <div className="flex items-center gap-2 min-w-0">
             <Shield className="h-5 w-5 shrink-0 text-primary" />
@@ -115,13 +116,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
           <div className="space-y-4">
             {isSetupComplete ? (
-              <MonitoringFeed
-                fullName={identity!.fullName}
-                username={identity!.username}
-                keywords={identity!.keywords || ""}
-                onAlertsChange={handleAlertsChange}
-                onMonitoringChange={handleMonitoringChange}
-              />
+              <>
+                <MonitoringFeed
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                  keywords={identity!.keywords || ""}
+                  onAlertsChange={handleAlertsChange}
+                  onMonitoringChange={handleMonitoringChange}
+                />
+                <SearchResultsIntelligence
+                  fullName={identity!.fullName}
+                  username={identity!.username}
+                />
+              </>
             ) : (
               <div className="rounded-lg border border-border bg-card p-8 sm:p-12 text-center">
                 <Shield className="mx-auto mb-4 h-8 w-8 text-muted-foreground" />
@@ -131,7 +138,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
             )}
 
-            <div className="rounded-lg border border-border bg-card p-4">
+            <div className="neon-card rounded-lg border border-border bg-card p-4">
               <p className="text-xs font-body text-muted-foreground leading-relaxed text-center">
                 E-Vara is a prototype monitoring tool designed to help users identify potential identity misuse online.
                 No real web scraping occurs during this demonstration.
