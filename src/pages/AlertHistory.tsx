@@ -71,6 +71,18 @@ const exportPDF = async (alerts: AlertItem[]) => {
   doc.save(`evara-alerts-${new Date().toISOString().slice(0, 10)}.pdf`);
 };
 
+const recommendations: Record<AlertSeverity, string> = {
+  low: "Recommended: Review activity and keep monitoring enabled.",
+  medium: "Recommended: Update passwords and enable security alerts.",
+  high: "Recommended: Enable 2FA immediately and revoke suspicious sessions.",
+};
+
+const alertType = (msg: string) => {
+  if (/login|sign in|credential/i.test(msg)) return "Suspicious login attempt detected";
+  if (/breach|leak|dump/i.test(msg)) return "Potential data exposure event";
+  return "Anomalous identity activity detected";
+};
+
 const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
   return (
     <div className="min-h-screen bg-background">
@@ -120,7 +132,7 @@ const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
                 style={{ animationDelay: `${Math.min(i * 30, 300)}ms`, animationFillMode: "both" }}
               >
                 <div className="mb-2 flex items-start justify-between gap-2 sm:gap-4">
-                  <div><p className="text-xs font-semibold text-foreground">Threat type: {alert.message}</p><p className="mt-1 text-[11px] text-slate-300">{EXPLAIN[alert.severity]}</p><p className="mt-1 text-[11px] text-cyan-200">Recommended: {ACTIONS[alert.severity]}</p></div>
+                  <p className="text-xs font-body text-foreground">{alertType(alert.message)}</p>
                   <div className="flex shrink-0 items-center gap-2">
                     <span className={`rounded px-1.5 py-0.5 text-[10px] font-mono uppercase ${SEVERITY_BADGE[alert.severity]}`}>
                       {alert.severity}
@@ -130,6 +142,8 @@ const AlertHistory = ({ alerts, onBack }: AlertHistoryProps) => {
                     </span>
                   </div>
                 </div>
+                <p className="mb-2 text-xs text-muted-foreground">{alert.message}</p>
+                <p className="mb-3 text-xs text-primary">{recommendations[alert.severity]}</p>
                 <div className="flex items-center gap-3 flex-wrap">
                   <a
                     href={`https://www.google.com/search?q=${encodeURIComponent(alert.query)}`}

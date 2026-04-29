@@ -7,19 +7,31 @@ const stages = [
   "System Ready",
 ];
 
-const CyberDashboardLoader = () => {
-  const [stage, setStage] = useState(0);
-  const [progress, setProgress] = useState(8);
+  const messages = [
+    "Initializing System...",
+    "Loading Security Modules...",
+    "Establishing Secure Environment...",
+    "System Ready",
+  ];
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setStage((s) => Math.min(s + 1, stages.length - 1));
-      setProgress((p) => Math.min(100, p + 24));
-    }, 2200);
-    return () => clearInterval(id);
+    const messageInterval = setInterval(() => {
+      setCurrentMessage((prev) => Math.min(prev + 1, messages.length - 1));
+    }, 1400);
+
+    return () => clearInterval(messageInterval);
   }, []);
 
-  const ready = useMemo(() => stage >= stages.length - 1, [stage]);
+  useEffect(() => {
+    const progressInterval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) return 100;
+        return prev + Math.random() * 12 + 8;
+      });
+    }, 800);
+
+    return () => clearInterval(progressInterval);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 overflow-hidden bg-[#0a0f1c]">
