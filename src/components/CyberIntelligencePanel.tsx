@@ -1,16 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import DigitalFootprintMap from "@/components/DigitalFootprintMap";
+import { useMemo, useState } from "react";
 import {
   AlertTriangle,
   Bot,
   ChevronDown,
   ChevronUp,
+  Cpu,
   Sparkles,
   Target,
   Zap,
 } from "lucide-react";
 
 interface CyberIntelligencePanelProps {
+  fullName: string;
+  username: string;
   alertCount: number;
   monitoringActive: boolean;
 }
@@ -23,6 +25,14 @@ type TimelineEvent = {
   detail: string;
   timestamp: string;
   risk: RiskTone;
+};
+
+type PlatformNode = {
+  id: string;
+  label: string;
+  exposure: number;
+  x: number;
+  y: number;
 };
 
 type AttackStep = {
@@ -61,6 +71,14 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
     timestamp: "Nov 14, 2024 · 10:31 UTC",
     risk: "medium",
   },
+];
+
+const PLATFORM_GRAPH: PlatformNode[] = [
+  { id: "github", label: "GitHub", exposure: 77, x: 20, y: 26 },
+  { id: "instagram", label: "Instagram", exposure: 62, x: 77, y: 22 },
+  { id: "x", label: "X / Twitter", exposure: 53, x: 84, y: 62 },
+  { id: "linkedin", label: "LinkedIn", exposure: 69, x: 35, y: 78 },
+  { id: "reddit", label: "Reddit", exposure: 34, x: 10, y: 60 },
 ];
 
 const ATTACK_STEPS: AttackStep[] = [
@@ -130,15 +148,15 @@ const CircleMetric = ({ label, value, tone }: { label: string; value: number; to
   );
 };
 
-const CyberIntelligencePanel = ({ alertCount, monitoringActive }: CyberIntelligencePanelProps) => {
+const CyberIntelligencePanel = ({ fullName, username, alertCount, monitoringActive }: CyberIntelligencePanelProps) => {
   const [expandedEvent, setExpandedEvent] = useState<number | null>(1);
+  const [selectedNode, setSelectedNode] = useState<PlatformNode | null>(PLATFORM_GRAPH[0]);
   const [simulating, setSimulating] = useState(false);
   const [simulationStep, setSimulationStep] = useState(0);
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant"; text: string }>>([
     { role: "assistant", text: "Ask E-Vara about exposure patterns or mitigation guidance." },
   ]);
   const [typing, setTyping] = useState(false);
-  const timeoutIds = useRef<number[]>([]);
 
   const riskScore = useMemo(() => {
     const base = 35;
@@ -153,30 +171,20 @@ const CyberIntelligencePanel = ({ alertCount, monitoringActive }: CyberIntellige
     setSimulating(true);
     setSimulationStep(0);
     ATTACK_STEPS.forEach((_, idx) => {
-      const timer = window.setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
-      timeoutIds.current.push(timer);
+      setTimeout(() => setSimulationStep(idx + 1), idx * 900 + 350);
     });
-    const timer = window.setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
-    timeoutIds.current.push(timer);
+    setTimeout(() => setSimulating(false), ATTACK_STEPS.length * 900 + 500);
   };
 
   const askQuestion = (type: "exposure" | "reduce") => {
     const question = type === "exposure" ? "Where am I most exposed?" : "How can I reduce my risk?";
     setChatMessages((prev) => [...prev, { role: "user", text: question }]);
     setTyping(true);
-    const timer = window.setTimeout(() => {
+    setTimeout(() => {
       setTyping(false);
       setChatMessages((prev) => [...prev, { role: "assistant", text: CHAT_RESPONSES[type] }]);
     }, 950);
-    timeoutIds.current.push(timer);
   };
-
-  useEffect(() => {
-    return () => {
-      timeoutIds.current.forEach((id) => window.clearTimeout(id));
-      timeoutIds.current = [];
-    };
-  }, []);
 
   return (
     <section className="space-y-4">
@@ -257,8 +265,31 @@ const CyberIntelligencePanel = ({ alertCount, monitoringActive }: CyberIntellige
           </div>
         </article>
 
-        <article className="glass-panel p-2 sm:p-3">
-          <DigitalFootprintMap />
+        <article className="glass-panel p-4 sm:p-5">
+          <div className="mb-3 flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-primary" />
+            <h4 className="text-sm font-semibold uppercase tracking-wider">Digital Footprint Map</h4>
+          </div>
+          <div className="relative h-64 rounded-lg border border-border/70 bg-black/20 p-3">
+            {PLATFORM_GRAPH.map((node) => (
+              <button
+                key={node.id}
+                onClick={() => setSelectedNode(node)}
+                className={`absolute -translate-x-1/2 -translate-y-1/2 rounded-full px-2 py-1 text-[10px] font-mono transition-all ${
+                  selectedNode?.id === node.id ? "bg-primary/30 shadow-[0_0_22px_hsl(var(--primary)/0.65)]" : "bg-secondary/60"
+                }`}
+                style={{ left: `${node.x}%`, top: `${node.y}%`, border: `1px solid hsl(var(--severity-${node.exposure > 65 ? "high" : node.exposure > 45 ? "medium" : "low"}) / 0.8)` }}
+              >
+                {node.label}
+              </button>
+            ))}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/80 bg-primary/20 px-3 py-1 text-xs font-semibold shadow-[0_0_28px_hsl(var(--primary)/0.55)]">
+              {username || fullName}
+            </div>
+          </div>
+          <p className="mt-3 text-xs text-muted-foreground">
+            {selectedNode ? `${selectedNode.label} exposure intensity: ${selectedNode.exposure}/100` : "Select a node to inspect exposure details."}
+          </p>
         </article>
       </div>
 
@@ -269,8 +300,8 @@ const CyberIntelligencePanel = ({ alertCount, monitoringActive }: CyberIntellige
               <Zap className="h-4 w-4 text-primary" />
               <h4 className="text-sm font-semibold uppercase tracking-wider">Attack Simulation Mode</h4>
             </div>
-            <button onClick={runSimulation} disabled={simulating} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60">
-              {simulating ? "Simulating..." : "Simulate Attack"}
+            <button onClick={runSimulation} className="neon-button rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground">
+              Simulate Attack
             </button>
           </div>
           <div className="space-y-2">
