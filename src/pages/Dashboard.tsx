@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Shield, LogOut, History, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useTheme } from "@/hooks/useTheme";
 import FaceScan from "@/components/FaceScan";
 import IdentityForm from "@/components/IdentityForm";
 import MonitoringFeed, { type AlertItem } from "@/components/MonitoringFeed";
@@ -17,7 +16,6 @@ const scanPhases = ["Scanning Digital Footprint...", "Tracking Data Sources...",
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
   const { user, logout, getIdentity, saveIdentity } = useAuth();
-  const { theme, toggle: toggleTheme } = useTheme();
   const [identity, setIdentity] = useState(getIdentity());
   const [alerts, setAlerts] = useState<AlertItem[]>([]);
   const [scanCount, setScanCount] = useState(() => (getIdentity()?.faceImage ? 1 : 0));
@@ -71,36 +69,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   }
 
   return (
-    <div className="neon-bg min-h-screen bg-background">
-      <header className="sticky top-0 z-10 border-b border-border bg-card/70 backdrop-blur-md neon-outline">
+    <div className="min-h-screen bg-[#0a0f1c] text-cyan-100">
+      {booting && <FuturisticSplash onDone={() => setBooting(false)} />}
+      <header className="sticky top-0 z-10 border-b border-cyan-500/30 bg-[#0a0f1c]/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-2">
-            <Shield className="h-5 w-5 shrink-0 text-primary" />
-            <h1 className="neon-title truncate text-sm font-bold tracking-tight text-foreground">E-Vara</h1>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <button
-              onClick={toggleTheme}
-              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foregr[...]"
-              aria-label="Toggle theme"
-            >
-              {theme === "dark" ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}
-            </button>
-            <button
-              onClick={() => setShowHistory(true)}
-              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foregr[...]"
-            >
-              <History className="h-3 w-3" />
-              <span className="hidden sm:inline">History</span>
-            </button>
-            <span className="hidden text-xs text-muted-foreground lg:inline">{user?.email}</span>
-            <button
-              onClick={handleLogout}
-              className="neon-button inline-flex items-center gap-1 rounded-md border border-border bg-secondary px-2 py-1.5 text-[10px] text-muted-foreground transition-colors hover:border-foreg[...]"
-            >
-              <LogOut className="h-3 w-3" />
-              <span className="hidden sm:inline">Logout</span>
-            </button>
+          <div className="flex items-center gap-2"><Shield className="h-5 w-5 text-cyan-300" /><h1 className="text-sm font-semibold tracking-[0.2em]">E-VARA</h1></div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowHistory(true)} className="rounded border border-cyan-500/40 px-2 py-1 text-xs"> <History className="h-3 w-3" /> </button>
+            <span className="hidden text-xs text-cyan-300/70 lg:inline">{user?.email}</span>
+            <button onClick={() => { logout(); onLogout(); }} className="rounded border border-cyan-500/40 px-2 py-1 text-xs"> <LogOut className="h-3 w-3" /> </button>
           </div>
         </div>
       </div>
@@ -116,6 +93,12 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <IdentityForm onSave={handleIdentitySave} initial={identity} />
             <ToolsPanel identity={identity} />
           </div>
+          <div className="md:col-span-3 grid gap-2 sm:grid-cols-3">
+            <QuickStat label="Your Digital Risk Level" value={riskLevel} />
+            <QuickStat label="Threats detected" value={String(alerts.length)} />
+            <QuickStat label="Last scan time" value={monitoringStart ? monitoringStart.toLocaleTimeString() : "N/A"} />
+          </div>
+        </section>
 
           <div className="space-y-4">
             {isSetupComplete ? (
@@ -139,17 +122,15 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
               </div>
             )}
 
-            <div className="glass-panel rounded-xl p-4">
-              <p className="text-center text-xs leading-relaxed text-muted-foreground">
-                E-Vara is a prototype monitoring tool designed to help users identify potential identity misuse online.
-                No real web scraping occurs during this demonstration.
-              </p>
-            </div>
-          </div>
+        <div className="grid gap-4 lg:grid-cols-[360px_1fr]">
+          <div className="space-y-4"><FaceScan onComplete={handleFaceComplete} existingImage={identity?.faceImage || null} /><IdentityForm onSave={handleIdentitySave} initial={identity} /><ToolsPanel identity={identity} /></div>
+          <div className="space-y-4"><MonitoringFeed fullName={identity?.fullName || ""} username={identity?.username || ""} keywords={identity?.keywords || ""} onAlertsChange={setAlerts} onMonitoringChange={(a, t) => { setMonitoringActive(a); setMonitoringStart(t); }} /><SearchResultsIntelligence fullName={identity?.fullName || ""} username={identity?.username || ""} /></div>
         </div>
       </main>
     </div>
   );
 };
+
+const QuickStat = ({ label, value }: { label: string; value: string }) => <div className="rounded border border-cyan-600/30 bg-cyan-950/10 p-3"><p className="text-[10px] uppercase tracking-[0.15em] text-cyan-300">{label}</p><p className="text-lg text-cyan-100">{value}</p></div>;
 
 export default Dashboard;

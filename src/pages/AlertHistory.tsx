@@ -1,10 +1,7 @@
-import { ExternalLink, ArrowLeft, Clock, Download, FileText } from "lucide-react";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import type { AlertItem, AlertSeverity } from "@/components/MonitoringFeed";
 
-interface AlertHistoryProps {
-  alerts: AlertItem[];
-  onBack: () => void;
-}
+interface AlertHistoryProps { alerts: AlertItem[]; onBack: () => void; }
 
 const SEVERITY_BADGE: Record<AlertSeverity, string> = {
   low: "text-yellow-300 bg-yellow-400/10",
@@ -44,10 +41,10 @@ const THREAT_GUIDANCE: Record<AlertSeverity, { type: string; explanation: string
   },
 };
 
-const SEVERITY_BORDER: Record<AlertSeverity, string> = {
-  low: "border-l-[hsl(var(--severity-low))]",
-  medium: "border-l-[hsl(var(--severity-medium))]",
-  high: "border-l-[hsl(var(--severity-high))]",
+const actionBySeverity: Record<AlertSeverity, string> = {
+  low: "Review account activity and update passwords for inactive services.",
+  medium: "Enable MFA and revoke unknown sessions on linked services.",
+  high: "Suspicious login attempt detected. Recommended: Enable 2FA immediately.",
 };
 
 const exportCSV = (alerts: AlertItem[]) => {
