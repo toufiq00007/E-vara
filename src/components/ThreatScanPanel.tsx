@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
-import { AlertTriangle, ShieldAlert, TrendingUp } from "lucide-react";
-import { Bar, BarChart, Cell, Pie, PieChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { useEffect, useMemo, useState } from "react";
+import { BarChart, Bar, Cell, PieChart, Pie, ResponsiveContainer, XAxis, YAxis, Tooltip } from "recharts";
+import ScanStep from "@/components/ScanStep";
+import ChartCard from "@/components/ChartCard";
+import StatCard from "@/components/StatCard";
 
-const scanFlow = [
+const scanStages = [
   "Scanning Digital Footprint...",
   "Tracking Data Sources...",
   "Analyzing Behavioral Patterns...",
@@ -10,71 +12,73 @@ const scanFlow = [
 ];
 
 const pieData = [
-  { name: "Safe", value: 36, color: "#22d3ee" },
-  { name: "Vulnerable", value: 38, color: "#2563eb" },
-  { name: "High Risk", value: 26, color: "#f97316" },
+  { name: "Safe", value: 34, color: "#00e5ff" },
+  { name: "Vulnerable", value: 43, color: "#3d8bff" },
+  { name: "High Risk", value: 23, color: "#ff5f3a" },
 ];
 
 const barData = [
-  { category: "Social Media Risk", value: 78 },
-  { category: "Email Security", value: 65 },
-  { category: "Password Strength", value: 52 },
-  { category: "Device Exposure", value: 69 },
+  { name: "Social", value: 74 },
+  { name: "Email", value: 57 },
+  { name: "Password", value: 48 },
+  { name: "Device", value: 68 },
 ];
 
 const ThreatScanPanel = () => {
-  const [step, setStep] = useState(0);
-  const [complete, setComplete] = useState(false);
-
+  const [stage, setStage] = useState(0);
   useEffect(() => {
-    const id = setInterval(() => {
-      setStep((prev) => {
-        const next = prev + 1;
-        if (next >= scanFlow.length) {
-          setComplete(true);
-          clearInterval(id);
-          return prev;
-        }
-        return next;
-      });
-    }, 1300);
-
-    return () => clearInterval(id);
+    const timer = setInterval(() => setStage((s) => (s < scanStages.length ? s + 1 : s)), 900);
+    return () => clearInterval(timer);
   }, []);
 
-  return <div className="rounded-xl border border-cyan-500/30 bg-[#0a0f1c] p-4 text-cyan-100 shadow-[0_0_24px_rgba(0,229,255,.08)]">
-    <h2 className="mb-3 text-sm uppercase tracking-[0.25em] text-cyan-300">Threat Scan Engine</h2>
-    {!complete ? <div className="space-y-2">{scanFlow.map((s, i) => <div key={s} className={`rounded border p-2 text-xs tracking-wider transition-all ${i <= step ? "border-cyan-400/70 bg-cyan-500/10 shadow-[0_0_14px_rgba(0,229,255,.18)]" : "border-cyan-900/70 bg-transparent text-cyan-900"}`}>{s}</div>)}</div> :
-      <div className="space-y-4">
-        <div className="grid gap-3 md:grid-cols-2">
-          <StatCard icon={ShieldAlert} label="Threat Level" value="HIGH" tone="text-orange-400" />
-          <StatCard icon={TrendingUp} label="Risk Score" value="72%" tone="text-cyan-300" />
+  const riskScore = 72;
+  const level = useMemo(() => (riskScore >= 70 ? "HIGH" : riskScore >= 45 ? "MEDIUM" : "LOW"), [riskScore]);
+
+  return (
+    <section className="space-y-4 rounded-xl border border-[#244163] bg-[#0a1224] p-4">
+      <h2 className="text-base font-semibold tracking-wide text-[#b7f8ff]">Threat Scan Console</h2>
+      <div className="space-y-2">{scanStages.map((s, i) => <ScanStep key={s} label={s} active={i === stage - 1} complete={i < stage - 1} />)}</div>
+      {stage > scanStages.length && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="grid gap-3 md:grid-cols-2">
+            <StatCard label="Threat Level" value={level} />
+            <StatCard label="Risk Score" value={`${riskScore}%`} />
+            <StatCard label="Chance of Account Compromise" value="68%" />
+            <StatCard label="Data Exposure Risk" value="54%" />
+            <StatCard label="Identity Misuse Risk" value="41%" />
+          </div>
+          <div className="grid gap-3 lg:grid-cols-2">
+            <ChartCard title="Risk Distribution">
+              <div className="h-56">
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie data={pieData} dataKey="value" outerRadius={84} innerRadius={46}>
+                      {pieData.map((entry) => <Cell key={entry.name} fill={entry.color} />)}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartCard>
+            <ChartCard title="Security Category Analysis">
+              <div className="h-56">
+                <ResponsiveContainer>
+                  <BarChart data={barData}>
+                    <XAxis dataKey="name" stroke="#8eb3d6" />
+                    <YAxis stroke="#8eb3d6" />
+                    <Tooltip />
+                    <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+                      {barData.map((_, i) => <Cell key={i} fill={["#00e5ff", "#3da4ff", "#31d3c6", "#ff7c53"][i]} />)}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </ChartCard>
+          </div>
         </div>
-        <div className="rounded border border-cyan-900/60 p-3 text-xs">
-          <p>Chance of Account Compromise: <span className="text-orange-300">68%</span></p>
-          <p>Data Exposure Risk: <span className="text-orange-300">54%</span></p>
-          <p>Identity Misuse Risk: <span className="text-orange-300">41%</span></p>
-        </div>
-        <div className="grid gap-3 lg:grid-cols-2">
-          <ChartCard title="Risk Distribution"><ResponsiveContainer width="100%" height={220}><PieChart><Pie data={pieData} dataKey="value" nameKey="name" innerRadius={55} outerRadius={85}>{pieData.map((e) => <Cell key={e.name} fill={e.color} />)}</Pie></PieChart></ResponsiveContainer></ChartCard>
-          <ChartCard title="Security Surface"><ResponsiveContainer width="100%" height={220}><BarChart data={barData}><XAxis dataKey="category" tick={{ fill: "#8fdfff", fontSize: 10 }} interval={0} angle={-20} textAnchor="end" height={56} /><YAxis tick={{ fill: "#8fdfff", fontSize: 10 }} /><Bar dataKey="value" radius={[6, 6, 0, 0]} fill="#00e5ff" /></BarChart></ResponsiveContainer></ChartCard>
-        </div>
-      </div>}
-  </div>;
+      )}
+    </section>
+  );
 };
-
-const StatCard = ({ icon: Icon, label, value, tone }: { icon: typeof AlertTriangle; label: string; value: string; tone: string }) => (
-  <div className="rounded border border-cyan-600/40 bg-cyan-950/10 p-3">
-    <div className="mb-1 flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-cyan-400"><Icon className="h-4 w-4" />{label}</div>
-    <div className={`text-2xl font-semibold tracking-widest ${tone}`}>{value}</div>
-  </div>
-);
-
-const ChartCard = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="rounded border border-cyan-900/80 bg-[#070b15] p-2">
-    <p className="mb-2 px-2 text-[11px] uppercase tracking-[0.18em] text-cyan-300">{title}</p>
-    {children}
-  </div>
-);
 
 export default ThreatScanPanel;
