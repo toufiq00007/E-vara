@@ -25,6 +25,25 @@ const EXPLAIN: Record<AlertSeverity, string> = {
   high: "High-confidence malicious indicator tied to identity misuse.",
 };
 
+
+const THREAT_GUIDANCE: Record<AlertSeverity, { type: string; explanation: string; action: string }> = {
+  low: {
+    type: "Suspicious Metadata Drift",
+    explanation: "Minor anomalies were found in indexed identity records.",
+    action: "Revalidate public profile visibility settings.",
+  },
+  medium: {
+    type: "Credential Threat Activity",
+    explanation: "Potential reuse patterns suggest elevated exposure risk.",
+    action: "Rotate passwords and enable multi-factor authentication.",
+  },
+  high: {
+    type: "Suspicious Login Attempt",
+    explanation: "High-confidence signal indicates unauthorized access attempts.",
+    action: "Enable 2FA immediately and review active sessions.",
+  },
+};
+
 const SEVERITY_BORDER: Record<AlertSeverity, string> = {
   low: "border-l-[hsl(var(--severity-low))]",
   medium: "border-l-[hsl(var(--severity-medium))]",
