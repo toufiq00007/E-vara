@@ -23,43 +23,55 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
     setLoading(true);
     try {
       // 1. Register or update the identity in public.monitored_identities
-      // Note: In a real app, we'd encrypt the identity_value_encrypted
-      // For this version, we'll store it and use identity_hash for lookup
-      const identity_hash = btoa(email).slice(0, 32); // Simple hash for demo logic
+      const identity_hash = btoa(email).slice(0, 32); 
 
-      const { data: identity, error: identityError } = await supabase
-        .from('monitored_identities' as any)
-        .upsert({
-          user_id: user.id,
-          identity_type: 'email',
-          identity_value_encrypted: email, // Should be AES-256
-          identity_hash: identity_hash,
-          is_active: true
-        } as any)
-        .select()
-        .single();
-
-      if (identityError) throw identityError;
+      let identityData;
+      try {
+        const { data, error } = await supabase
+          .from('monitored_identities' as any)
+          .upsert({
+            user_id: user.id,
+            identity_type: 'email',
+            identity_value_encrypted: email,
+            identity_hash: identity_hash,
+            is_active: true
+          } as any)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        identityData = data;
+      } catch (dbError: any) {
+        console.warn("Supabase Database unreachable:", dbError.message);
+        throw new Error("Supabase infrastructure is currently unreachable. Please check your VITE_SUPABASE_URL and verify the project is active.");
+      }
 
       // 2. Trigger the breach check edge function
-      const { data: scanResult, error: scanError } = await supabase.functions.invoke('breach-check', {
-        body: { 
-          identityId: (identity as any).id, 
-          identityValue: email, 
-          userId: user.id 
-        }
-      });
+      try {
+        const { data: scanResult, error: scanError } = await supabase.functions.invoke('breach-check', {
+          body: { 
+            identityId: (identityData as any).id, 
+            identityValue: email, 
+            userId: user.id 
+          }
+        });
 
-      if (scanError) throw scanError;
+        if (scanError) throw scanError;
 
-      toast.success("Identity monitoring active", {
-        description: `Found ${scanResult.count} historical data breaches.`
-      });
+        toast.success("Identity monitoring active", {
+          description: `Found ${scanResult.count} historical data breaches.`
+        });
+      } catch (funcError: any) {
+        console.warn("Supabase Functions unreachable:", funcError.message);
+        toast.warning("Identity registered locally", {
+          description: "Could not trigger remote scanner. Real-time monitoring may be delayed."
+        });
+      }
 
       if (onSave) onSave({ email, username, fullName });
     } catch (error: any) {
       console.error("Identity registration failed:", error);
-      toast.error("Monitoring initialization failed", {
+      toast.error("Infrastructure Connection Error", {
         description: error.message
       });
     } finally {

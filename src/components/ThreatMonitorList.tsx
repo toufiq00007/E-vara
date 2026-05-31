@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { ShieldCheck, Loader2, AlertTriangle } from 'lucide-react';
 
 export const ThreatMonitorList = () => {
-  const { findings, loading } = useThreatMonitor();
+  const { findings, loading, isOffline } = useThreatMonitor();
 
   if (loading) {
     return (
@@ -16,20 +16,32 @@ export const ThreatMonitorList = () => {
 
   if (findings.length === 0) {
     return (
-      <Card className="bg-background/50 border-dashed">
-        <CardContent className="flex flex-col items-center justify-center p-12 text-center">
-          <ShieldCheck className="h-12 w-12 text-green-500/50 mb-4" />
-          <CardTitle className="text-xl mb-2">Clean Bill of Health</CardTitle>
-          <p className="text-muted-foreground max-w-xs">
-            No active threats or data breaches have been detected for your monitored identities.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="space-y-4">
+        {isOffline && (
+          <div className="p-2 bg-destructive/10 border border-destructive/20 rounded text-[10px] text-destructive uppercase tracking-widest text-center animate-pulse">
+            Database Offline: Displaying Cached Intelligence
+          </div>
+        )}
+        <Card className="bg-background/50 border-dashed">
+          <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+            <ShieldCheck className="h-12 w-12 text-green-500/50 mb-4" />
+            <CardTitle className="text-xl mb-2">Clean Bill of Health</CardTitle>
+            <p className="text-muted-foreground max-w-xs">
+              No active threats or data breaches have been detected for your monitored identities.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
     <div className="space-y-4">
+      {isOffline && (
+        <div className="p-2 bg-destructive/10 border border-destructive/20 rounded text-[10px] text-destructive uppercase tracking-widest text-center animate-pulse">
+          Database Offline: Displaying Cached Intelligence
+        </div>
+      )}
       <div className="flex items-center gap-2 mb-6">
         <AlertTriangle className="h-5 w-5 text-destructive" />
         <h2 className="text-xl font-semibold">Active Intelligence Findings</h2>
