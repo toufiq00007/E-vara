@@ -28,23 +28,21 @@ const AuthPage = ({ onAuth }: AuthPageProps) => {
         setLoading(false);
         return;
       }
-      const err = await register(email, password);
-      if (err) { 
-        setError(err); 
-        setLoading(false);
-        return; 
+      try {
+        await register(email, password);
+        setMode("login");
+        setPassword("");
+        setConfirmPassword("");
+      } catch (err: any) {
+        setError(err.message || "Registration failed");
       }
-      setMode("login");
-      setPassword("");
-      setConfirmPassword("");
     } else {
-      const err = await login(email, password);
-      if (err) { 
-        setError(err); 
-        setLoading(false);
-        return; 
+      try {
+        await login(email, password);
+        onAuth();
+      } catch (err: any) {
+        setError(err.message || "Authentication failed");
       }
-      onAuth();
     }
     setLoading(false);
   };

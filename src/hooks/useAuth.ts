@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { User } from "@supabase/supabase-js";
 
 interface IdentityInfo {
   fullName: string;
@@ -12,67 +13,57 @@ interface IdentityInfo {
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+  // 1. Unified Session Query
+  const { data: user, isLoading: loading } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session?.user ?? null;
+    },
+    staleTime: Infinity, // Keep session until manually invalidated
+  });
 
-    // Listen for changes on auth state (sign in, sign out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  const register = async (email: string, password: string): Promise<string | null> => {
-    try {
-      const { error } = await supabase.auth.signUp({
+  // 2. Optimized Sign In
+  const loginMutation = useMutation({
+    mutationFn: async ({ email, pass }: any) => {
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password,
+        password: pass,
       });
       if (error) throw error;
-      toast.success("Registration Successful", {
-        description: "Please check your email for the verification link."
-      });
-      return null;
-    } catch (err: any) {
-      return err.message;
+      return data.user;
+    },
+    onSuccess: (newUser) => {
+      queryClient.setQueryData(["auth-user"], newUser);
+      toast.success("Login Successful", { description: "Session established." });
+    },
+    onError: (err: any) => {
+      toast.error("Auth Error", { description: err.message });
     }
-  };
+  });
 
-  const login = async (email: string, password: string): Promise<string | null> => {
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  // 3. Register Mutation
+  const registerMutation = useMutation({
+    mutationFn: async ({ email, pass }: any) => {
+      const { error } = await supabase.auth.signUp({ email, password: pass });
       if (error) throw error;
-      toast.success("Login Successful", {
-        description: "Establishing secure session..."
-      });
-      return null;
-    } catch (err: any) {
-      return err.message;
+    },
+    onSuccess: () => {
+      toast.success("Designation Created", { description: "Verification email sent." });
+    },
+    onError: (err: any) => {
+      toast.error("Registration Error", { description: err.message });
     }
-  };
+  });
 
-  const logout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      // Local storage cleanup if any non-auth items exist
-      localStorage.removeItem("evara-identity"); 
-    } catch (err: any) {
-      toast.error("Logout failed", { description: err.message });
-    }
-  };
+  const logout = useCallback(async () => {
+    await supabase.auth.signOut();
+    queryClient.setQueryData(["auth-user"], null);
+    localStorage.removeItem("evara-identity");
+    toast.success("Session Terminated");
+  }, [queryClient]);
 
   const getIdentity = useCallback((): IdentityInfo | null => {
     const data = localStorage.getItem("evara-identity");
@@ -83,5 +74,13 @@ export function useAuth() {
     localStorage.setItem("evara-identity", JSON.stringify(info));
   }, []);
 
-  return { user, loading, register, login, logout, getIdentity, saveIdentity };
+  return { 
+    user, 
+    loading, 
+    login: (e: string, p: string) => loginMutation.mutateAsync({ email: e, pass: p }),
+    register: (e: string, p: string) => registerMutation.mutateAsync({ email: e, pass: p }),
+    logout, 
+    getIdentity, 
+    saveIdentity 
+  };
 }

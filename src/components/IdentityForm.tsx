@@ -64,10 +64,10 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
         identityData = data;
       } catch (dbError: any) {
         console.warn("Supabase Database unreachable, entering Simulation Mode:", dbError.message);
-        // Seamless fallback to simulation
+        // Honest disclosure to the user
         await new Promise(r => setTimeout(r, 1000));
-        toast.success("Intelligence System Synchronized", {
-          description: "Operational awareness established in local simulation mode."
+        toast.warning("Local Simulation Active", {
+          description: "Infrastructure unreachable. Running in disconnected security mode."
         });
         if (onSave) onSave({ email, username, fullName });
         setLoading(false);

@@ -1,13 +1,29 @@
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const NetworkTraffic = () => {
-  const data = useMemo(() => {
+  const [data, setData] = useState(() => {
     return Array.from({ length: 20 }, (_, i) => ({
       time: `${i}:00`,
-      traffic: Math.floor(Math.random() * 500) + 200,
-      threats: Math.floor(Math.random() * 20),
+      traffic: Math.floor(Math.random() * 300) + 200,
+      threats: Math.floor(Math.random() * 10),
     }));
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setData(prev => {
+        const next = [...prev.slice(1)];
+        const lastTime = parseInt(prev[prev.length - 1].time);
+        next.push({
+          time: `${(lastTime + 1) % 24}:00`,
+          traffic: Math.floor(Math.random() * 300) + 200,
+          threats: Math.floor(Math.random() * 15),
+        });
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
