@@ -48,7 +48,35 @@ const ToolsPanel = ({ identity }: ToolsPanelProps) => {
     setScanError(null);
     setScanResults(null);
 
+    // Check if we are in Demo Mode (missing keys)
+    const isDemoMode = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes("placeholder");
+
     try {
+      if (isDemoMode) {
+        await new Promise(r => setTimeout(r, 2000)); // Simulate deep scan
+        setScanResults({
+          results: [
+            {
+              source: "HaveIBeenPwned",
+              breachName: "LinkedIn 2021",
+              breachDate: "2021-06-22",
+              dataTypes: ["email", "name", "phone"],
+              severity: "high",
+              description: "Official LinkedIn data scrap and leak."
+            }
+          ],
+          summary: {
+            totalBreaches: 1,
+            sourcesChecked: 5,
+            highSeverity: 1,
+            mediumSeverity: 0,
+            lowSeverity: 0
+          },
+          scannedAt: new Date().toISOString()
+        });
+        return;
+      }
+
       const { data, error } = await supabase.functions.invoke("breach-check", {
         body: {
           email: identity.fullName.toLowerCase().replace(/\s/g, ".") + "@example.com",

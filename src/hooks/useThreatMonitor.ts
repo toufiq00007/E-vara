@@ -17,6 +17,26 @@ export const useThreatMonitor = () => {
       } catch (e) {
         console.error('Failed to parse local findings:', e);
       }
+    } else {
+      // Premium Mock Data for first-time demo users
+      setFindings([
+        {
+          id: '1',
+          severity: 'high',
+          title: 'Identity Compromised: LinkedIn 2021',
+          source: 'Dark Web Leak',
+          description: 'User email and password hash found in a verified dataset. Recommended action: Rotate credentials.',
+          found_at: new Date().toISOString()
+        },
+        {
+          id: '2',
+          severity: 'medium',
+          title: 'Partial Identity Match: GitHub Metadata',
+          source: 'Public OSINT',
+          description: 'Reused handle detected across 3 social platforms with linked profile markers.',
+          found_at: new Date(Date.now() - 86400000).toISOString()
+        }
+      ]);
     }
     setIsOffline(true);
   }, []);

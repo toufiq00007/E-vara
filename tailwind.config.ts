@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        mono: ['"IBM Plex Mono"', 'monospace'],
+        mono: ['"JetBrains Mono"', 'monospace'],
         body: ['"Inter"', 'sans-serif'],
       },
       colors: {
@@ -25,13 +25,18 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
+          DEFAULT: "#FF6A1A",
+          foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
+          DEFAULT: "#4A8BFF",
+          foreground: "#FFFFFF",
         },
+        surface: "#0E1015",
+        elevated: "#141821",
+        success: "#26D07C",
+        alert: "#FF4343",
+        warning: "#FFB547",
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",

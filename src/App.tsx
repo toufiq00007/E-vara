@@ -8,21 +8,27 @@ import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
-import PricingPage from "./pages/Pricing.tsx";
+import LandingPage from "./pages/Landing.tsx";
+import AuthPage from "./pages/AuthPage.tsx";
+import Dashboard from "./pages/Dashboard.tsx";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [isAuthed, setIsAuthed] = useState(() => !!localStorage.getItem("evara-session"));
 
   useEffect(() => {
-    // Simulate loading for 3 seconds
+    // Simulate loading for 2 seconds
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, []);
+
+  const handleAuth = () => setIsAuthed(true);
+  const handleLogout = () => setIsAuthed(false);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -32,8 +38,16 @@ const App = () => {
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route 
+              path="/auth" 
+              element={isAuthed ? <Dashboard onLogout={handleLogout} /> : <AuthPage onAuth={handleAuth} />} 
+            />
+            <Route 
+              path="/dashboard" 
+              element={isAuthed ? <Dashboard onLogout={handleLogout} /> : <AuthPage onAuth={handleAuth} />} 
+            />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -28,7 +28,20 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
     if (!user) return;
 
     setLoading(true);
+    
+    // Check if we are in Demo Mode (missing keys)
+    const isDemoMode = !import.meta.env.VITE_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL.includes("placeholder");
+
     try {
+      if (isDemoMode) {
+        await new Promise(r => setTimeout(r, 1500)); // Simulate network
+        toast.success("Identity Intelligence Active [DEMO]", {
+          description: "Simulation complete. Found 4 historical data points."
+        });
+        if (onSave) onSave({ email, username, fullName });
+        return;
+      }
+
       // 1. Register or update the identity in public.monitored_identities
       const identity_hash = btoa(email).slice(0, 32); 
 
