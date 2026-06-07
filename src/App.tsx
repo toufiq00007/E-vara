@@ -11,6 +11,7 @@ import PricingPage from "./pages/Pricing.tsx";
 import LandingPage from "./pages/Landing.tsx";
 import AuthPage from "./pages/AuthPage.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import BookDemo from "./pages/BookDemo.tsx";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,7 @@ const App = () => {
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/book-demo" element={<BookDemo />} />
             <Route 
               path="/auth" 
               element={isAuthed ? <Dashboard onLogout={handleLogout} /> : <AuthPage onAuth={handleAuth} />} 

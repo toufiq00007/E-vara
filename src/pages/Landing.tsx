@@ -36,7 +36,7 @@ const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/auth">
+            <Link to="/book-demo">
               <Button variant="ghost" className="hidden sm:inline-flex uppercase tracking-widest text-[10px] font-bold">Book Demo</Button>
             </Link>
             <Link to="/auth">
