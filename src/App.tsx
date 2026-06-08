@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -6,17 +7,17 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 import { useAuth, UserProfile } from "@/hooks/useAuth";
 
-import NotFound from "./pages/NotFound.tsx";
-import PricingPage from "./pages/Pricing.tsx";
-import LandingPage from "./pages/Landing.tsx";
-import AuthPage from "./pages/AuthPage.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import BookDemo from "./pages/BookDemo.tsx";
-import ClientPortal from "./pages/ClientPortal.tsx";
-import IdentityRecords from "./pages/IdentityRecords.tsx";
-import BillingPage from "./pages/Billing.tsx";
-import SupportPage from "./pages/Support.tsx";
-import LegalProtocol from "./pages/LegalProtocol.tsx";
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const PricingPage = lazy(() => import("./pages/Pricing.tsx"));
+const LandingPage = lazy(() => import("./pages/Landing.tsx"));
+const AuthPage = lazy(() => import("./pages/AuthPage.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const BookDemo = lazy(() => import("./pages/BookDemo.tsx"));
+const ClientPortal = lazy(() => import("./pages/ClientPortal.tsx"));
+const IdentityRecords = lazy(() => import("./pages/IdentityRecords.tsx"));
+const BillingPage = lazy(() => import("./pages/Billing.tsx"));
+const SupportPage = lazy(() => import("./pages/Support.tsx"));
+const LegalProtocol = lazy(() => import("./pages/LegalProtocol.tsx"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -59,62 +60,64 @@ const AppRouter = () => {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/pricing" element={<PricingPage />} />
-        <Route path="/book-demo" element={<BookDemo />} />
-        <Route path="/legal" element={<LegalProtocol />} />
-        
-        {/* Protected Routes */}
-        <Route 
-          path="/client-portal" 
-          element={
-            <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
-              <ClientPortal />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/identity-records" 
-          element={
-            <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
-              <IdentityRecords />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/billing" 
-          element={
-            <ProtectedRoute user={user} profile={profile} profileError={profileError}>
-              <BillingPage />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/support" 
-          element={
-            <ProtectedRoute user={user} profile={profile} profileError={profileError}>
-              <SupportPage />
-            </ProtectedRoute>
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
-              <Dashboard onLogout={logout} />
-            </ProtectedRoute>
-          } 
-        />
+      <Suspense fallback={<CyberDashboardLoader />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route path="/book-demo" element={<BookDemo />} />
+          <Route path="/legal" element={<LegalProtocol />} />
+          
+          {/* Protected Routes */}
+          <Route 
+            path="/client-portal" 
+            element={
+              <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
+                <ClientPortal />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/identity-records" 
+            element={
+              <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
+                <IdentityRecords />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/billing" 
+            element={
+              <ProtectedRoute user={user} profile={profile} profileError={profileError}>
+                <BillingPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/support" 
+            element={
+              <ProtectedRoute user={user} profile={profile} profileError={profileError}>
+                <SupportPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute user={user} profile={profile} profileError={profileError} requireActiveBilling={true}>
+                <Dashboard onLogout={logout} />
+              </ProtectedRoute>
+            } 
+          />
 
-        {/* Auth Route */}
-        <Route 
-          path="/auth" 
-          element={user ? <Navigate to="/dashboard" /> : <AuthPage onAuth={() => {}} />} 
-        />
+          {/* Auth Route */}
+          <Route 
+            path="/auth" 
+            element={user ? <Navigate to="/dashboard" /> : <AuthPage onAuth={() => {}} />} 
+          />
 
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 };

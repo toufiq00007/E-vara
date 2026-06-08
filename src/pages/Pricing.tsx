@@ -1,8 +1,15 @@
 import { Shield, Zap, Target, Globe, BarChart3, Lock, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useSEO } from "@/hooks/useSEO";
 
 const PricingPage = () => {
+  useSEO({
+    title: "Pricing & Plans",
+    description: "View the monetization grid and secure your digital sovereignty with E-VARA's enterprise pricing tiers.",
+    canonicalUrl: "https://e-vara.vercel.app/pricing"
+  });
+
   const tiers = [
     {
       name: "Tactical",
