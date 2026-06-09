@@ -4,9 +4,10 @@ interface SEOProps {
   title: string;
   description: string;
   canonicalUrl?: string;
+  image?: string;
 }
 
-export function useSEO({ title, description, canonicalUrl }: SEOProps) {
+export function useSEO({ title, description, canonicalUrl, image = "https://image2url.com/r2/default/images/1773156349601-5fbf9f70-b342-4f44-b48d-32b3f38ba59f.png" }: SEOProps) {
   useEffect(() => {
     // 1. Update Title
     document.title = `${title} | E-VARA Security`;
@@ -21,13 +22,28 @@ export function useSEO({ title, description, canonicalUrl }: SEOProps) {
     metaDescription.setAttribute('content', description);
 
     // 3. Update Open Graph Title & Description
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', `${title} | E-VARA`);
+    const setMetaTag = (property: string, content: string, attr: 'property' | 'name' = 'property') => {
+      let tag = document.querySelector(`meta[${attr}="${property}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, property);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
 
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', description);
+    setMetaTag('og:title', `${title} | E-VARA`);
+    setMetaTag('og:description', description);
+    setMetaTag('og:image', image);
+    if (canonicalUrl) setMetaTag('og:url', canonicalUrl);
 
-    // 4. Update Canonical URL
+    // 4. Update Twitter Cards
+    setMetaTag('twitter:card', 'summary_large_image', 'name');
+    setMetaTag('twitter:title', `${title} | E-VARA`, 'name');
+    setMetaTag('twitter:description', description, 'name');
+    setMetaTag('twitter:image', image, 'name');
+
+    // 5. Update Canonical URL
     if (canonicalUrl) {
       let canonicalLink = document.querySelector('link[rel="canonical"]');
       if (!canonicalLink) {
@@ -38,5 +54,5 @@ export function useSEO({ title, description, canonicalUrl }: SEOProps) {
       canonicalLink.setAttribute('href', canonicalUrl);
     }
 
-  }, [title, description, canonicalUrl]);
+  }, [title, description, canonicalUrl, image]);
 }

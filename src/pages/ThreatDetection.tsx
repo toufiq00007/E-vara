@@ -112,6 +112,32 @@ async function scanPerimeter(targetHash: string) {
           </div>
         </div>
       </div>
+
+      {/* SEO Content Cluster / Security Insights */}
+      <div className="container mx-auto px-6 pb-24">
+        <div className="max-w-4xl mx-auto space-y-16 border-t border-white/5 pt-20 mt-16">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter">Deep Web Threat Intelligence & Monitoring</h2>
+            <p className="text-muted-foreground font-body leading-relaxed">
+              True digital defense extends beyond the corporate perimeter. Our deep web threat intelligence continuously scours underground forums, illicit marketplaces, and unindexed data dumps. By leveraging autonomous OSINT sweeps, E-VARA acts as a proactive early warning system, identifying exposed enterprise credentials and executive personal data before they can be weaponized in targeted phishing or ransomware attacks.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter">Credential Stuffing Defense & Account Takeover Prevention</h2>
+            <p className="text-muted-foreground font-body leading-relaxed">
+              When third-party vendors suffer data breaches, the resulting credential leakage often fuels devastating credential stuffing and account takeover (ATO) attacks against your critical infrastructure. E-VARA's historical breach analysis correlates billions of leaked records in real-time, allowing security teams to enforce immediate password resets and zero-trust verification the moment an executive's data is exposed in the wild.
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter">Identity Access Management (IAM) Security Posture</h2>
+            <p className="text-muted-foreground font-body leading-relaxed">
+              MFA is no longer enough to stop sophisticated threat actors. To maintain a resilient Identity Access Management (IAM) security posture, organizations must integrate continuous identity threat detection. E-VARA's cryptographic anonymity guarantees that while we relentlessly pursue leaked data signatures, your actual PII remains entirely invisible and mathematically secured via zero-knowledge proofs.
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

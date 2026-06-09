@@ -85,6 +85,23 @@ const SolutionsPage = () => {
             </Button>
           </Link>
         </div>
+
+        {/* SEO Content Cluster / Security Insights */}
+        <div className="mt-24 max-w-4xl mx-auto space-y-16 border-t border-white/5 pt-20">
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter">Zero-Trust Identity Security Frameworks</h2>
+            <p className="text-muted-foreground font-body leading-relaxed">
+              In an era where the traditional network perimeter has dissolved, organizations must adopt a Zero-Trust security model. E-VARA's enterprise solutions empower financial institutions and legal practices to continuously verify the digital integrity of their high-value targets. By integrating autonomous identity monitoring directly into your risk management framework, you eliminate the blind spots exploited by advanced persistent threats (APTs).
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter">Sovereign Data Protection & Compliance</h2>
+            <p className="text-muted-foreground font-body leading-relaxed">
+              For public sector entities and defense contractors, data sovereignty and regulatory compliance are non-negotiable. E-VARA operates on a strict zero-knowledge architecture, meaning client-side cryptographic hashing ensures that PII never traverses the cloud in plaintext. This allows organizations to aggressively monitor the dark web for executive exposure without violating GDPR, CCPA, or localized sovereign data mandates.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
