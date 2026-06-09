@@ -22,6 +22,7 @@ const IdentityRecords = lazy(() => import("./pages/IdentityRecords.tsx"));
 const BillingPage = lazy(() => import("./pages/Billing.tsx"));
 const SupportPage = lazy(() => import("./pages/Support.tsx"));
 const LegalProtocol = lazy(() => import("./pages/LegalProtocol.tsx"));
+const AsmeLanding = lazy(() => import("./pages/AsmeLanding.tsx"));
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { QueryCache, MutationCache } from "@tanstack/react-query";
@@ -85,6 +86,7 @@ const AppRouter = () => {
       <Suspense fallback={<CyberDashboardLoader />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/asme" element={<AsmeLanding />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/threat-detection" element={<ThreatDetectionPage />} />
