@@ -42,7 +42,7 @@ const IdentityRecords = () => {
             type: d.identity_type || "email",
             value: d.identity_value_encrypted || "classified",
             status: d.is_active ? "Active" : "Disabled",
-            risk: (d.risk_score || 0) > 60 ? "High" : (d.risk_score || 0) > 30 ? "Medium" : "Low" as any
+            risk: ((d.risk_score || 0) > 60 ? "High" : (d.risk_score || 0) > 30 ? "Medium" : "Low") as "High" | "Medium" | "Low"
           }));
         },
         `e_vara_records_${user.id}`,
@@ -66,7 +66,7 @@ const IdentityRecords = () => {
             const list = JSON.parse(cached) as MonitoredRecord[];
             const filtered = list.filter(r => r.id !== id);
             localStorage.setItem(storageKey, JSON.stringify(filtered));
-          } catch (err) {}
+          } catch (err) { /* ignore */ }
         }
       }
     },

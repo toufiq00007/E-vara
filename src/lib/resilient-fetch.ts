@@ -40,7 +40,7 @@ export async function runResilient<T>(
     return mockFallback;
   }
 
-  let lastError: any = null;
+  let lastError: unknown = null;
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const result = await operation();
@@ -63,7 +63,7 @@ export async function runResilient<T>(
   if (cached) {
     try {
       return JSON.parse(cached) as T;
-    } catch (e) {}
+    } catch (e) { /* ignore */ }
   }
   return mockFallback;
 }

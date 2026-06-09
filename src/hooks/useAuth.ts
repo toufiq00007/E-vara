@@ -95,7 +95,9 @@ export function useAuth() {
           const parsed = JSON.parse(cachedDemo);
           defaultFullName = parsed.fullName || defaultFullName;
           defaultEmail = parsed.email || defaultEmail;
-        } catch (e) {}
+        } catch (e) {
+          /* ignore */
+        }
       }
 
       const mockIdentity: IdentityInfo = {
@@ -123,7 +125,7 @@ export function useAuth() {
           if (!data) return null;
 
           let decodedEmail = data.identity_value_encrypted;
-          try { decodedEmail = atob(data.identity_value_encrypted); } catch (e) {}
+          try { decodedEmail = atob(data.identity_value_encrypted); } catch (e) { /* ignore */ }
 
           return {
             fullName: data.full_name || "",
@@ -197,11 +199,12 @@ export function useAuth() {
 
       try {
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
-        const res = await Promise.race([
+        const resRaw = await Promise.race([
           supabase.auth.signInWithPassword({ email: e, password: p }),
           timeoutPromise
-        ]) as any;
+        ]);
         
+        const res = resRaw as { error?: Error, data?: unknown };
         if (res.error) throw res.error;
         localStorage.setItem('e_vara_demo_auth', 'false');
         return res;
@@ -220,11 +223,12 @@ export function useAuth() {
 
       try {
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
-        const res = await Promise.race([
+        const resRaw = await Promise.race([
           supabase.auth.signUp({ email: e, password: p }),
           timeoutPromise
-        ]) as any;
+        ]);
         
+        const res = resRaw as { error?: Error, data?: unknown };
         if (res.error) throw res.error;
         localStorage.setItem('e_vara_demo_auth', 'false');
         return res;

@@ -100,11 +100,12 @@ const MonitoringFeed = ({ fullName, username, keywords, onAlertsChange, onMonito
   };
 
   useEffect(() => {
+    const timeouts = timeoutsRef.current;
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
-      timeoutsRef.current.forEach((t) => window.clearTimeout(t));
+      timeouts.forEach((t) => window.clearTimeout(t));
     };
   }, []);
 
