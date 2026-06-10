@@ -42,18 +42,9 @@ export function useAuth() {
   const { data: user, isLoading: loading } = useQuery({
     queryKey: ["auth-user"],
     queryFn: async () => {
-      if (localStorage.getItem('e_vara_demo_auth') === 'true') {
-        return DEMO_USER;
-      }
-      return runResilient(
-        async () => {
-          const { data: { session }, error } = await supabase.auth.getSession();
-          if (error) throw error;
-          return session?.user ?? null;
-        },
-        "e_vara_session",
-        null
-      );
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      return session?.user ?? null;
     },
     staleTime: 1000 * 60 * 5,
   });
@@ -194,53 +185,18 @@ export function useAuth() {
     identity,
     loading: loading || loadingIdentity, 
     login: async (e: string, p: string) => {
-      // If already in demo mode, skip the long timeout and instantly login
-      if (localStorage.getItem('e_vara_demo_auth') === 'true') {
-        await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-        return { data: { user: DEMO_USER, session: {} }, error: null };
-      }
-
-      try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
-        const resRaw = await Promise.race([
-          supabase.auth.signInWithPassword({ email: e, password: p }),
-          timeoutPromise
-        ]);
-        
-        const res = resRaw as { error?: Error, data?: unknown };
-        if (res.error) throw res.error;
-        localStorage.setItem('e_vara_demo_auth', 'false');
-        return res;
-      } catch (err) {
-        console.warn("Supabase login failed, falling back to Demo Mode", err);
-        localStorage.setItem('e_vara_demo_auth', 'true');
-        await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-        return { data: { user: DEMO_USER, session: {} }, error: null };
-      }
+      const { data, error } = await supabase.auth.signInWithPassword({ email: e, password: p });
+      if (error) throw error;
+      localStorage.setItem('e_vara_demo_auth', 'false');
+      await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      return { data, error };
     },
     register: async (e: string, p: string) => {
-      if (localStorage.getItem('e_vara_demo_auth') === 'true') {
-        await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-        return { data: { user: DEMO_USER, session: {} }, error: null };
-      }
-
-      try {
-        const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 3000));
-        const resRaw = await Promise.race([
-          supabase.auth.signUp({ email: e, password: p }),
-          timeoutPromise
-        ]);
-        
-        const res = resRaw as { error?: Error, data?: unknown };
-        if (res.error) throw res.error;
-        localStorage.setItem('e_vara_demo_auth', 'false');
-        return res;
-      } catch (err) {
-        console.warn("Supabase register failed, falling back to Demo Mode", err);
-        localStorage.setItem('e_vara_demo_auth', 'true');
-        await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
-        return { data: { user: DEMO_USER, session: {} }, error: null };
-      }
+      const { data, error } = await supabase.auth.signUp({ email: e, password: p });
+      if (error) throw error;
+      localStorage.setItem('e_vara_demo_auth', 'false');
+      await queryClient.invalidateQueries({ queryKey: ["auth-user"] });
+      return { data, error };
     },
     logout, 
     saveIdentity 
