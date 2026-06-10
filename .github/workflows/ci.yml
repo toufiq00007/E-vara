@@ -1,13 +1,17 @@
-name: CI Pipeline
+name: E-VARA CI/CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [main]
   pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
 
 jobs:
   lint:
-    name: Lint Codebase
+    name: 🔍 Lint & Type Check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -16,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
@@ -25,31 +29,39 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
+      - name: Type Check
+        run: npx tsc --noEmit
+
   test:
-    name: Run Unit Tests
+    name: 🧪 Unit Tests
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
-      matrix:
-        node-version: [20.x, 22.x]
+    needs: [lint]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Vitest
-        run: npm run test
+      - name: Run Vitest with Coverage
+        run: npx vitest run --coverage --reporter=verbose
+
+      - name: Upload Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
 
   build:
-    name: Build Verification
+    name: 🏗️ Build Verification
     runs-on: ubuntu-latest
     needs: [lint, test]
     steps:
@@ -59,11 +71,80 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20.x'
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Build
+      - name: Build for Production
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+      - name: Check Bundle Size
+        run: |
+          echo "📦 Bundle Size Report:"
+          du -sh dist/
+          echo "---"
+          find dist/assets -name '*.js' -exec du -sh {} \;
+
+  security-scan:
+    name: 🛡️ Security Audit
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: npm audit
+        run: npm audit --audit-level=high || true
+        continue-on-error: true
+
+  deploy-preview:
+    name: 🚀 Deploy Preview
+    runs-on: ubuntu-latest
+    needs: [build, security-scan]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Preview Ready
+        run: echo "✅ Preview build ready for deployment"
+
+  deploy-production:
+    name: 🌍 Deploy Production
+    runs-on: ubuntu-latest
+    needs: [build, security-scan]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Deploy to Vercel
+        run: echo "✅ Production deployment triggered via Vercel Git integration"

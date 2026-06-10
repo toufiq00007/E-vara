@@ -40,7 +40,7 @@ const PricingPage = () => {
         "Community Support",
         "7-Day Retention"
       ],
-      cta: "Initialize Node",
+      cta: "Create Free Account",
       highlight: false
     },
     {
@@ -56,7 +56,7 @@ const PricingPage = () => {
         "Direct Encryption Support",
         "24-Month Retention"
       ],
-      cta: "Secure Protocol",
+      cta: "Join Waitlist",
       highlight: true
     },
     {
@@ -71,7 +71,7 @@ const PricingPage = () => {
         "Dedicated Intelligence Officer",
         "Infinite Data Retention"
       ],
-      cta: "Contact Command",
+      cta: "Request Early Access",
       highlight: false
     }
   ];
@@ -135,7 +135,7 @@ const PricingPage = () => {
                 ))}
               </div>
 
-              <Link to={tier.name === 'Omni-Layer' ? '/book-demo' : '/auth'} className="w-full">
+              <Link to={tier.name === 'Tactical' ? '/auth' : '/book-demo'} className="w-full">
                 <Button 
                   className={`w-full py-7 rounded-[16px] font-black uppercase tracking-widest text-xs transition-all ${
                     tier.highlight 

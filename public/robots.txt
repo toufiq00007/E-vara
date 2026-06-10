@@ -1,10 +1,9 @@
 User-agent: *
 Allow: /
-Disallow: /auth
 Disallow: /dashboard
 Disallow: /client-portal
 Disallow: /identity-records
 Disallow: /billing
-Disallow: /support
+Disallow: /auth
 
 Sitemap: https://e-vara.vercel.app/sitemap.xml

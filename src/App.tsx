@@ -22,9 +22,12 @@ const IdentityRecords = lazy(() => import("./pages/IdentityRecords.tsx"));
 const BillingPage = lazy(() => import("./pages/Billing.tsx"));
 const SupportPage = lazy(() => import("./pages/Support.tsx"));
 const LegalProtocol = lazy(() => import("./pages/LegalProtocol.tsx"));
-const AsmeLanding = lazy(() => import("./pages/AsmeLanding.tsx"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
+const CookieNotice = lazy(() => import("./pages/CookieNotice.tsx"));
 
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import FeedbackWidget from "@/components/FeedbackWidget";
+import { usePageView, useScrollDepth, useSessionDuration, useClickTracking } from "@/hooks/useAnalytics";
 import { QueryCache, MutationCache } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -76,6 +79,15 @@ const ProtectedRoute = ({ children, user, profile, profileError, requireActiveBi
   return <>{children}</>;
 };
 
+// Analytics wrapper — must be inside BrowserRouter for useLocation
+const AnalyticsProvider = ({ children }: { children: React.ReactNode }) => {
+  usePageView();
+  useScrollDepth();
+  useSessionDuration();
+  useClickTracking();
+  return <>{children}</>;
+};
+
 const AppRouter = () => {
   const { user, profile, profileError, loading, logout } = useAuth();
 
@@ -83,10 +95,10 @@ const AppRouter = () => {
 
   return (
     <BrowserRouter>
+      <AnalyticsProvider>
       <Suspense fallback={<CyberDashboardLoader />}>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/asme" element={<AsmeLanding />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/solutions" element={<SolutionsPage />} />
           <Route path="/threat-detection" element={<ThreatDetectionPage />} />
@@ -94,6 +106,8 @@ const AppRouter = () => {
           <Route path="/docs" element={<DocsPage />} />
           <Route path="/book-demo" element={<BookDemo />} />
           <Route path="/legal" element={<LegalProtocol />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/cookies" element={<CookieNotice />} />
           
           {/* Protected Routes */}
           <Route 
@@ -146,6 +160,7 @@ const AppRouter = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
+      </AnalyticsProvider>
     </BrowserRouter>
   );
 };
@@ -157,6 +172,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <AppRouter />
+        <FeedbackWidget />
       </TooltipProvider>
     </QueryClientProvider>
   </ErrorBoundary>
