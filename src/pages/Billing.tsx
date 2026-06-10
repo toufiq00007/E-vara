@@ -1,46 +1,10 @@
-import { Shield, CreditCard, Check, ArrowUpRight, Download, Clock, Zap, Building } from "lucide-react";
+import { Shield, Lock, Check, ArrowUpRight, Zap, Building, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
-
-import { runResilient } from "@/lib/resilient-fetch";
-
-interface Invoice {
-  id: string;
-  date: string;
-  amount: string;
-  status: string;
-}
-
-const MOCK_INVOICES: Invoice[] = [
-  { id: "TX-2026-081", date: "Jun 01, 2026", amount: "$499.00", status: "Success" },
-  { id: "TX-2026-042", date: "May 01, 2026", amount: "$499.00", status: "Success" }
-];
 
 const BillingPage = () => {
   const { profile } = useAuth();
-
-  const { data: invoices = [], isLoading } = useQuery<Invoice[], Error>({
-    queryKey: ["billing-history"],
-    queryFn: async () => {
-      return runResilient(
-        async () => {
-          // If we had a stripe integration endpoint, we would query it here.
-          // Returning empty array will trigger the fallback since empty list is default,
-          // but we can simulate a offline/online state.
-          return [];
-        },
-        "e_vara_invoices",
-        MOCK_INVOICES
-      );
-    }
-  });
-
-  const handleCheckout = () => {
-    // Basic checkout stub ready for Stripe Payment Links
-    window.open("https://billing.stripe.com/p/login/test_xxxxxxxx", "_blank");
-  };
 
   return (
     <div className="min-h-screen bg-[#050608] text-foreground font-mono selection:bg-primary/30">
@@ -61,114 +25,66 @@ const BillingPage = () => {
       </nav>
 
       <div className="container mx-auto px-6 py-12">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <header className="mb-12">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-[0.2em] mb-4">
-              <Zap className="h-3 w-3" /> Active Subscription
+              <Clock className="h-3 w-3" /> Early Access Phase
             </div>
-            <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">Subscription & Billing</h1>
-            <p className="text-muted-foreground font-body">Manage your operational tiers and review encrypted transaction history.</p>
+            <h1 className="text-4xl font-black tracking-tighter uppercase mb-2">Account Status</h1>
+            <p className="text-muted-foreground font-body">Review your operational tier and platform access state.</p>
           </header>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="md:col-span-2 p-8 rounded-[24px] border border-primary/20 bg-primary/5 relative overflow-hidden">
+          <div className="grid gap-8 mb-12">
+            <div className="p-8 rounded-[24px] border border-primary/20 bg-primary/5 relative overflow-hidden">
                <div className="absolute inset-0 hud-grid opacity-[0.05] pointer-events-none" />
                <div className="relative z-10 flex flex-col md:flex-row justify-between gap-8">
                   <div>
                     <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary/80 mb-2">Current Protocol</p>
-                    <h2 className="text-3xl font-black uppercase mb-4">{profile?.tier || 'Executive'} Defense</h2>
+                    <h2 className="text-3xl font-black uppercase mb-4">{profile?.tier || 'Tactical'} Defense</h2>
                     <p className="text-sm text-muted-foreground font-body leading-relaxed mb-8 max-w-sm">
-                      Continuous OSINT scanning, priority data crawling, and automated PDF dossiers active.
+                      You are currently enrolled in the E-VARA Early Access program. Core OSINT capabilities are unlocked.
                     </p>
                     <div className="flex gap-4">
-                       <Button onClick={handleCheckout} className="bg-primary hover:bg-primary/90 text-white rounded-[12px] px-6 text-[10px] font-bold uppercase tracking-widest">
-                         Manage via Stripe
+                       <Button disabled className="bg-white/5 border border-white/10 text-muted-foreground rounded-[12px] px-6 text-[10px] font-bold uppercase tracking-widest cursor-not-allowed">
+                         Payments On Hold
                        </Button>
                     </div>
                   </div>
-                  <div className="text-right flex flex-col justify-between">
+                  <div className="text-left md:text-right flex flex-col justify-between">
                      <div>
                        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-1">Status</p>
-                       <p className="text-2xl font-black capitalize">{profile?.billing_status || 'Active'}</p>
+                       <p className="text-2xl font-black text-white">Active (Waitlist)</p>
                      </div>
-                     <div className="flex items-center gap-2 text-[10px] font-bold text-success uppercase mt-8 md:mt-0">
-                        <Check className="h-3 w-3" /> System Synchronized
+                     <div className="flex items-center gap-2 text-[10px] font-bold text-primary uppercase mt-8 md:mt-0">
+                        <Lock className="h-3 w-3" /> Zero-Knowledge Mode
                      </div>
                   </div>
                </div>
-            </div>
-
-            <div className="p-8 rounded-[24px] border border-white/5 bg-[#11141B]">
-               <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground mb-6">Payment Method</p>
-               <div className="flex items-center gap-4 mb-8">
-                  <div className="h-10 w-14 rounded-md bg-white/5 border border-white/10 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold uppercase">Stripe Billing</p>
-                    <p className="text-[10px] text-muted-foreground uppercase">Managed Portal</p>
-                  </div>
-               </div>
-               <Button onClick={handleCheckout} variant="outline" className="w-full border-white/10 rounded-[12px] text-[10px] font-bold uppercase tracking-widest">
-                 Update Method
-               </Button>
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-white/5 bg-[#11141B] overflow-hidden">
-             <div className="p-6 border-b border-white/5 flex items-center justify-between">
-                <h3 className="font-bold uppercase tracking-widest text-sm">Transaction History</h3>
-                <div className="flex items-center gap-2 text-[10px] text-muted-foreground uppercase">
-                   <Clock className="h-3 w-3" /> 24 Month Retention
-                </div>
-             </div>
-             <div className="overflow-x-auto">
-               <table className="w-full text-left">
-                 <thead>
-                    <tr className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest border-b border-white/5">
-                      <th className="px-6 py-4">Designation</th>
-                      <th className="px-6 py-4">Date</th>
-                      <th className="px-6 py-4">Amount</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4 text-right">Action</th>
-                    </tr>
-                 </thead>
-                 <tbody className="text-sm">
-                    {isLoading ? (
-                      <tr><td colSpan={5} className="px-6 py-12 text-center text-muted-foreground animate-pulse">Decrypting ledger...</td></tr>
-                    ) : (invoices || []).map((inv) => (
-                      <tr key={inv.id} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                        <td className="px-6 py-4 font-bold">{inv.id}</td>
-                        <td className="px-6 py-4 text-muted-foreground">{inv.date}</td>
-                        <td className="px-6 py-4 font-bold">{inv.amount}</td>
-                        <td className="px-6 py-4">
-                           <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border border-success/30 bg-success/10 text-success">
-                             {inv.status}
-                           </span>
-                        </td>
-                        <td className="px-6 py-4 text-right">
-                          <button className="text-muted-foreground hover:text-primary transition-colors">
-                            <Download className="h-4 w-4" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                 </tbody>
-               </table>
-             </div>
+          <div className="rounded-[24px] border border-white/5 bg-[#11141B] p-8 text-center max-w-2xl mx-auto">
+             <Shield className="h-12 w-12 text-primary/50 mx-auto mb-6" />
+             <h3 className="text-lg font-black uppercase mb-4">Commercial Operations Paused</h3>
+             <p className="text-sm text-muted-foreground font-body leading-relaxed mb-8">
+                To ensure maximum infrastructure stability and compliance before full public availability, we are not accepting new commercial payments at this time. All users are currently granted early access privileges.
+             </p>
+             <p className="text-xs font-bold uppercase text-primary tracking-widest">
+                You will be notified prior to V1.0 Launch.
+             </p>
           </div>
 
           <div className="mt-12 flex flex-col md:flex-row items-center justify-between gap-8 p-8 rounded-[24px] border border-white/5 bg-white/[0.01]">
              <div className="flex items-center gap-4">
                 <Building className="h-6 w-6 text-muted-foreground" />
                 <div>
-                   <p className="text-[10px] font-bold uppercase tracking-widest">Enterprise Billing</p>
-                   <p className="text-xs text-muted-foreground mt-1">Need customized invoicing for corporate accounting?</p>
+                   <p className="text-[10px] font-bold uppercase tracking-widest">Enterprise Rollout</p>
+                   <p className="text-xs text-muted-foreground mt-1">Require immediate dedicated infrastructure deployment?</p>
                 </div>
              </div>
              <Link to="/book-demo">
                <Button variant="outline" className="border-white/10 rounded-[12px] text-[10px] uppercase font-bold tracking-widest">
-                 Contact Sales <ArrowUpRight className="ml-2 h-3 w-3" />
+                 Contact Command <ArrowUpRight className="ml-2 h-3 w-3" />
                </Button>
              </Link>
           </div>
