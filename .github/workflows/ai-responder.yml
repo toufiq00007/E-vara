@@ -23,8 +23,12 @@ jobs:
             const repoOwner = context.repo.owner;
             const issueNumber = context.issue.number;
             
+            console.log(`Received comment from @${author}: "${commentBody}"`);
+            
             // Trigger conditions: if the user explicitly tags you or asks a question
-            const tagsOwner = commentBody.includes(`@${repoOwner}`) || commentBody.includes('@SHAURYASANYAL3');
+            const lowerComment = commentBody.toLowerCase();
+            const lowerOwner = repoOwner.toLowerCase();
+            const tagsOwner = lowerComment.includes(`@${lowerOwner}`) || lowerComment.includes('@shauryasanyal3');
             const asksQuestion = commentBody.includes('?');
             
             if (!tagsOwner && !asksQuestion) {
