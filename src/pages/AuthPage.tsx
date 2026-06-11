@@ -85,6 +85,7 @@ const AuthPage = ({ onAuth }: AuthPageProps) => {
                 required
                 className="w-full rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                 placeholder="target@company.com"
+                maxLength={255}
               />
             </div>
 
@@ -98,6 +99,7 @@ const AuthPage = ({ onAuth }: AuthPageProps) => {
                   required
                   className="w-full rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                   placeholder="••••••••"
+                  maxLength={128}
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary">
                   <Eye className="h-4 w-4" />
@@ -115,6 +117,7 @@ const AuthPage = ({ onAuth }: AuthPageProps) => {
                   required
                   className="w-full rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                   placeholder="••••••••"
+                  maxLength={128}
                 />
               </div>
             )}

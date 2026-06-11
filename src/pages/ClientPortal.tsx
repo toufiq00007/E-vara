@@ -22,7 +22,7 @@ const ClientPortal = () => {
       title: "Security Dashboard",
       desc: "Access real-time threat monitoring and identity maps.",
       icon: <Terminal className="h-6 w-6 text-primary" />,
-      link: "/auth", 
+      link: "/dashboard", 
       color: "border-primary/20 bg-primary/5"
     },
     {

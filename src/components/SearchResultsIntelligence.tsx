@@ -43,6 +43,7 @@ export const SearchResultsIntelligence = ({
         { title: `${safeHandle} | GitHub Repositories`, link: `https://github.com/search?q=${encodeURIComponent(safeHandle)}&type=users`, snippet: `Code contributions and tech footprint for ${safeHandle}...` }
       ];
 
+      let results = [];
       if (funcError) {
         // Fallback to mock data when offline/failed
         results = mockResults;

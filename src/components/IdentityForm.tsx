@@ -30,18 +30,28 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
     setLoading(true);
     
     try {
+      const safeEmail = email.trim().toLowerCase();
+      const safeUsername = username.trim();
+      const safeFullName = fullName.trim();
+      
+      if (!safeEmail) {
+        toast.error("Validation Error", { description: "Email is required." });
+        setLoading(false);
+        return;
+      }
+
       // 1. Cryptographic Integrity: Hash before persistence
-      const identity_hash = await sha256(email); 
+      const identity_hash = await sha256(safeEmail); 
 
       // 2. Real Persistence via useAuth (which now enforces hashing and Postgres RLS)
-      await saveIdentity({ email, username, fullName, faceImage: null });
+      await saveIdentity({ email: safeEmail, username: safeUsername, fullName: safeFullName, faceImage: null });
 
       // 3. Trigger Intelligence Engine
       let scanResult = null;
       let scanError = null;
       try {
-        const hashedEmail = await sha256(email);
-        const isDemoTarget = email.toLowerCase().endsWith('@demo.com') || email.toLowerCase().endsWith('@investor.com');
+        const hashedEmail = await sha256(safeEmail);
+        const isDemoTarget = safeEmail.endsWith('@demo.com') || safeEmail.endsWith('@investor.com');
         const res = await supabase.functions.invoke('breach-check', {
           body: { 
             identityHash: hashedEmail, 
@@ -69,7 +79,7 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
         description: `Analysis complete. Found ${resultCount} data markers.`
       });
 
-      if (onSave) onSave({ email, username, fullName });
+      if (onSave) onSave({ email: safeEmail, username: safeUsername, fullName: safeFullName });
     } catch (err) {
       toast.error("Operational Error", {
         description: "Failed to establish identity link. Check network status."
@@ -105,6 +115,7 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
             value={email} 
             onChange={e => setEmail(e.target.value)} 
             required 
+            maxLength={255}
             className={inputClass} 
             placeholder="target@example.com" 
           />
@@ -116,6 +127,7 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
             <input 
               value={username} 
               onChange={e => setUsername(e.target.value)} 
+              maxLength={100}
               className={inputClass} 
               placeholder="@handle" 
             />
@@ -125,6 +137,7 @@ const IdentityForm = ({ onSave, initial }: IdentityFormProps) => {
             <input 
               value={fullName} 
               onChange={e => setFullName(e.target.value)} 
+              maxLength={100}
               className={inputClass} 
               placeholder="John Doe" 
             />

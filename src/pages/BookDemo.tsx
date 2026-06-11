@@ -140,6 +140,7 @@ const BookDemo = () => {
                         required
                         className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                         placeholder="John Wick"
+                        maxLength={100}
                       />
                     </div>
                   </div>
@@ -155,6 +156,7 @@ const BookDemo = () => {
                         required
                         className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                         placeholder="target@company.com"
+                        maxLength={255}
                       />
                     </div>
                   </div>
@@ -171,6 +173,7 @@ const BookDemo = () => {
                       required
                       className="w-full pl-10 rounded-[12px] border border-white/10 bg-[#050608]/50 px-4 py-3 text-sm font-mono text-foreground focus:outline-none focus:ring-1 focus:ring-primary transition-all"
                       placeholder="Continental Corp"
+                      maxLength={150}
                     />
                   </div>
                 </div>
