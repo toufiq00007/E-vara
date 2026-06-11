@@ -1,0 +1,20 @@
+name: Greetings
+
+on:
+  pull_request_target:
+    types: [opened]
+  issues:
+    types: [opened]
+
+jobs:
+  greeting:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: "Welcome to E-VARA! 🎉 Thank you so much for opening your first issue. Our team will look into this shortly. In the meantime, feel free to join our community discussions!"
+          pr-message: "Welcome to E-VARA! 🚀 Thank you for your first pull request! We deeply appreciate your contribution to identity intelligence. A maintainer will review your code soon."
