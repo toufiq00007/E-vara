@@ -13,6 +13,13 @@ export type BadgeType =
   | "Product"
   | "NSOC'26";
 
+export interface ResolvedIssue {
+  issueNumber: number;
+  title: string;
+  description: string;
+  prLink?: string;
+}
+
 export interface Contributor {
   id: string;
   name: string;
@@ -27,6 +34,7 @@ export interface Contributor {
   level: ContributionLevel;
   badges: BadgeType[];
   joinedAt: string;
+  resolved_issues?: ResolvedIssue[];
 }
 
 // Current Sprint Contributors
@@ -45,6 +53,20 @@ export const contributors: Contributor[] = [
     level: "Founding Contributor",
     badges: ["Backend", "Security", "Product", "NSOC'26"],
     joinedAt: "Jan 2024",
+    resolved_issues: [
+      {
+        issueNumber: 14,
+        title: "Implement Zero-Trust Threat Engine",
+        description: "Built the core pipeline to ingest and normalize external threat feeds in real-time.",
+        prLink: "https://github.com/SHAURYASANYAL3/E-vara/pull/14"
+      },
+      {
+        issueNumber: 21,
+        title: "Add Automated DMCA Generation",
+        description: "Engineered a JS-based PDF generation pipeline for 1-click legal takedown notices.",
+        prLink: "https://github.com/SHAURYASANYAL3/E-vara/pull/21"
+      }
+    ]
   },
   {
     id: "c_002",
@@ -60,5 +82,19 @@ export const contributors: Contributor[] = [
     level: "Core Contributor",
     badges: ["Frontend", "Design", "NSOC'26"],
     joinedAt: "Feb 2024",
+    resolved_issues: [
+      {
+        issueNumber: 8,
+        title: "Design Concierge Dashboard UI",
+        description: "Created the sleek, high-end dark mode UI for the Concierge Threat Dashboard.",
+        prLink: "https://github.com/SHAURYASANYAL3/E-vara/pull/8"
+      },
+      {
+        issueNumber: 11,
+        title: "Implement Lazy Loading & SEO Schema",
+        description: "Optimized React Suspense boundaries and injected JSON-LD schema for AI ranking.",
+        prLink: "https://github.com/SHAURYASANYAL3/E-vara/pull/11"
+      }
+    ]
   },
 ];
