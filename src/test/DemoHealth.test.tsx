@@ -21,6 +21,7 @@ vi.mock("@tanstack/react-query", async (importOriginal) => {
   const original = await importOriginal<typeof import("@tanstack/react-query")>();
   return {
     ...original,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useQuery: (...args: any[]) => mockUseQuery(...args),
   };
 });
