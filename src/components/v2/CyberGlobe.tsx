@@ -1,16 +1,12 @@
-﻿import { useRef, useMemo, useState, useEffect } from "react";
+﻿import { useRef, useMemo, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial, Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
-function useIsLowEndDevice() {
-  const [isLowEnd, setIsLowEnd] = useState(false);
-  useEffect(() => {
-    const cores = navigator.hardwareConcurrency || 4;
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    setIsLowEnd(isMobile || cores <= 4);
-  }, []);
-  return isLowEnd;
+function getIsLowEndDevice() {
+  const cores = navigator.hardwareConcurrency || 4;
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  return isMobile || cores <= 4;
 }
 
 function GlobeParticles({ count }: { count: number }) {
@@ -52,7 +48,7 @@ function GlobeParticles({ count }: { count: number }) {
 }
 
 const CyberGlobe = () => {
-  const isLowEnd = useIsLowEndDevice();
+  const [isLowEnd] = useState(getIsLowEndDevice);
   const particleCount = isLowEnd ? 800 : 2000;
   const dpr: [number, number] = isLowEnd ? [1, 1] : [1, 2];
 
