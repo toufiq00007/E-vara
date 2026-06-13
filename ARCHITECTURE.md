@@ -14,16 +14,118 @@ The platform operates on a "Privacy-First Intelligence" model. Using privacy-pre
 - **Visualization**: Recharts for data analytics and Framer Motion for high-end UI animations.
 
 ## 3. Data Flow & Security
-### Identity Monitoring Pipeline
-1. **Input**: User provides identity markers (Email, Username, Name).
-2. **Privacy Layer**: Web Crypto API generates SHA-256 hashes of identifiers on the client.
-3. **Transmission**: Hashes are sent to Supabase Edge Functions over TLS.
-4. **Correlation**: Edge Functions query historical leak databases and social graph APIs using the provided hashes.
-5. **Persistence**: Findings are stored in PostgreSQL with Row Level Security (RLS) ensuring users only see their own data.
+
+##  Identity Analysis Pipeline
+
+The Identity Analysis Pipeline describes how user-provided identity markers are securely processed through E-VARA's architecture.
+
+### Pipeline Overview
+This pipeline illustrates how identity markers are securely processed from client input through backend analysis and executive reporting.
+
+```mermaid
+flowchart TD
+
+A[User Input]
+B[React Frontend]
+C[Client-side SHA-256 Hashing]
+D[Supabase Edge Functions]
+E[Identity Correlation Engine]
+F[Historical Breach Sources]
+G[Social Intelligence Sources]
+H[AI Risk Analysis]
+I[PostgreSQL with RLS]
+J[Executive Dashboard]
+K[PDF Dossier]
+
+A --> B
+B --> C
+C --> D
+D --> E
+E --> F
+E --> G
+F --> H
+G --> H
+H --> I
+I --> J
+J --> K
+```
+
+### Step 1: Client Input
+
+Users provide one or more identity markers such as:
+
+* Email addresses
+* Usernames
+* Full names
+
+The frontend validates input before processing.
+
+### Step 2: Privacy-Preserving Processing
+
+Sensitive identifiers are hashed client-side using the Web Crypto API and SHA-256 before transmission.
+
+This approach minimizes raw identifier exposure while preserving correlation capabilities.
+
+### Step 3: Secure Backend Processing
+
+Hashed identifiers are securely transmitted to Supabase Edge Functions over TLS.
+
+Edge Functions coordinate identity analysis and backend workflows.
+
+### Step 4: Identity Correlation
+
+The Identity Correlation Engine combines information from multiple intelligence sources, including:
+
+* Historical breach datasets
+* Social identity signals
+* Publicly available metadata
+
+The objective is to build a privacy-conscious identity profile for analysis.
+
+### Step 5: AI Risk Analysis
+
+Correlated signals are processed by the AI analysis layer.
+
+The AI component:
+
+* Evaluates exposure patterns.
+* Identifies potential threat vectors.
+* Estimates relative risk.
+* Generates explainable findings.
+
+### Step 6: Persistence Layer
+
+Analysis results are stored in PostgreSQL.
+
+Supabase Row Level Security (RLS) ensures users can only access their own records.
+
+### Step 7: Presentation Layer
+
+Processed intelligence is surfaced through:
+
+* Executive dashboards.
+* Threat visualizations.
+* Identity monitoring summaries.
+* Executive PDF dossiers.
+
+### Security Principles
+
+The Identity Analysis Pipeline follows several core principles:
+
+* Privacy-first data handling.
+* Client-side hashing.
+* Secure TLS communication.
+* Row Level Security enforcement.
+* Serverless backend scaling.
+* Explainable AI-assisted analysis.
+
 
 ### Threat Surface Mapping
 - **Vector Analysis**: Real-time correlation of metadata to identify potential attack paths.
 - **Auditing**: Automated generation of PDF dossiers using `jsPDF` for executive reporting.
+
+
+
 
 ## 4. Scalability
 - **Serverless Compute**: Deno-based Edge Functions scale with demand, offering predictable infrastructure scaling.
