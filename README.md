@@ -39,7 +39,7 @@ E-VARA combines exposure monitoring, trust scoring, explainable risk analysis, a
 
 E-VARA utilizes a cutting-edge serverless architecture for maximum scalability and performance.
 
-  mermaid
+```mermaid
   graph TD
 
     U[User Input]
@@ -75,6 +75,7 @@ E-VARA utilizes a cutting-edge serverless architecture for maximum scalability a
     GA --> VD
 
     VD --> R
+```
 
 - **Frontend**: React 18 (TypeScript), Vite, Tailwind CSS, Framer Motion.
 - **Infrastructure**: Supabase (PostgreSQL, Auth, Edge Functions, RLS).
