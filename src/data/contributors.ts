@@ -149,6 +149,83 @@ export const contributors: Contributor[] = [
     "is_founding": false,
     "level": "Contributor",
     "badges": [],
-    "joinedAt": "Jun 2026"
+    "joinedAt": "Jun 2026",
+    "resolved_issues": [
+      {
+        "issueNumber": 115,
+        "title": "docs: document identity analysis pipeline architecture",
+        "description": "Contributed detailed architecture documentation.",
+        "prLink": "https://github.com/SHAURYASANYAL3/E-vara/pull/115"
+      }
+    ]
+  },
+  {
+    "id": "c_237839667",
+    "name": "Janhvi Soni",
+    "github": "https://github.com/janhvisoni804",
+    "role": "Contributor",
+    "bio": "Open source contributor helping build the E-VARA perimeter.",
+    "avatar": "https://avatars.githubusercontent.com/u/237839667?v=4",
+    "contribution_summary": "Platform Improvements",
+    "merged_prs": 2,
+    "featured": false,
+    "is_founding": false,
+    "level": "Contributor",
+    "badges": ["NSOC'26"],
+    "joinedAt": "Jun 2026",
+    "resolved_issues": [
+      {
+        "issueNumber": 111,
+        "title": "chore: add JSDoc documentation for utility functions",
+        "description": "Improved codebase documentation for core utils.",
+        "prLink": "https://github.com/SHAURYASANYAL3/E-vara/pull/111"
+      }
+    ]
+  },
+  {
+    "id": "c_186990161",
+    "name": "Aman kumar vishwakarma",
+    "github": "https://github.com/amankv1234",
+    "role": "Contributor",
+    "bio": "Open source contributor helping build the E-VARA perimeter.",
+    "avatar": "https://avatars.githubusercontent.com/u/186990161?v=4",
+    "contribution_summary": "UI Improvements",
+    "merged_prs": 4,
+    "featured": false,
+    "is_founding": false,
+    "level": "Contributor",
+    "badges": ["Frontend", "NSOC'26"],
+    "joinedAt": "Jun 2026",
+    "resolved_issues": [
+      {
+        "issueNumber": 114,
+        "title": "fix: Fix Responsive Layout overflow on Mobile",
+        "description": "Resolved responsive layout overflow issues on mobile views.",
+        "prLink": "https://github.com/SHAURYASANYAL3/E-vara/pull/114"
+      }
+    ]
+  },
+  {
+    "id": "c_169473202",
+    "name": "Tripti Patel",
+    "github": "https://github.com/tri-pti",
+    "role": "Contributor",
+    "bio": "Open source contributor helping build the E-VARA perimeter.",
+    "avatar": "https://avatars.githubusercontent.com/u/169473202?v=4",
+    "contribution_summary": "Documentation Improvements",
+    "merged_prs": 1,
+    "featured": false,
+    "is_founding": false,
+    "level": "Contributor",
+    "badges": ["NSOC'26"],
+    "joinedAt": "Jun 2026",
+    "resolved_issues": [
+      {
+        "issueNumber": 116,
+        "title": "docs: add Mermaid architecture diagram to README",
+        "description": "Enhanced project documentation with Mermaid diagrams.",
+        "prLink": "https://github.com/SHAURYASANYAL3/E-vara/pull/116"
+      }
+    ]
   }
 ];
