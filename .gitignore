@@ -38,3 +38,9 @@ claude.md
 scratchpad.md
 *.ai.md
 
+
+.agents/
+.claude/
+.codex/
+.antigravitycli/
+
