@@ -12,7 +12,6 @@ export async function isRateLimited(
   windowSeconds: number = 60
 ): Promise<{ allowed: boolean; currentLimit: number }> {
   try {
-    // Invoke the optimized PL/pgSQL function securely via RPC
     const { data, error } = await supabase.rpc("check_rate_limit", {
       p_identifier: identifier,
       p_max_requests: maxRequests,
@@ -22,12 +21,12 @@ export async function isRateLimited(
     if (error) throw error;
 
     return {
-      allowed: !!data,
+      allowed: Boolean(data),
       currentLimit: maxRequests,
-    };
+,    };
   } catch (error) {
-    console.error("Rate limiting engine error:", error);
-    // Fail-safe open: let transactions process if the tracking pool goes down temporarily
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Rate limiting engine error:", errorMessage);
     return { allowed: true, currentLimit: maxRequests };
   }
 }
