@@ -73,6 +73,78 @@ const TrustCenter = () => {
     }
   };
 
+  const TrustCenter = () => {
+  const { user } = useAuth();
+  const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false); // 👈 new state
+
+  const onExportClick = async () => { /* ... your existing code ... */ };
+
+  // 👇 NEW HANDLER
+  const onDeleteClick = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to delete your identity.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      toast({
+        title: "Deletion Initiated",
+        description: "Your request has been logged. Account will be removed after 30 days.",
+      });
+
+      const res = await fetch("/functions/v1/delete-identity", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_id: user.id }),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error?.message || "Deletion request failed");
+      }
+    } catch (error: any) {
+      console.error("Deletion error:", error);
+      toast({
+        title: "Deletion Failed",
+        description: error.message || "An error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <Navbar />
+      <div className="pt-32 container mx-auto px-4 max-w-6xl">
+        {/* Existing Export Button */}
+        <Button onClick={onExportClick} disabled={isExporting}>
+          EXPORT MY DATA
+        </Button>
+
+        {/* 👇 NEW Delete Button */}
+        <Button
+          onClick={onDeleteClick}
+          disabled={isDeleting}
+          className="ml-4 font-semibold shadow-md bg-red-600 hover:bg-red-700"
+        >
+          {isDeleting ? "Deleting..." : "DELETE MY IDENTITY"}
+        </Button>
+
+        {/* ...rest of your UI... */}
+      </div>
+    </div>
+  );
+};
+
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
