@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import CyberDashboardLoader from "@/components/CyberDashboardLoader";
 import { useAuth, UserProfile } from "@/hooks/useAuth";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const PricingPage = lazy(() => import("./pages/Pricing.tsx"));
@@ -247,6 +248,7 @@ const App = () => (
           <Sonner />
           <AppRouter />
           <FeedbackWidget />
+          <ScrollToTop />
         </TooltipProvider>
       </SimulationProvider>
     </QueryClientProvider>
