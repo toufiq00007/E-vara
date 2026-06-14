@@ -23,21 +23,21 @@ jobs:
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
+
             // 2. Only proceed if the issue is completely unassigned
             if (issue.data.assignees && issue.data.assignees.length > 0) {
               console.log("Issue is already assigned. Skipping auto-assign.");
               return;
             }
-            
+
             // Skip if the commenter is a bot
             if (context.payload.comment.user.type === "Bot") {
               console.log("Commenter is a bot. Skipping.");
               return;
             }
-            
+
             const commenter = context.payload.comment.user.login;
-            
+
             try {
               // 3. Assign the user
               await github.rest.issues.addAssignees({
