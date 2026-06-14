@@ -51,7 +51,7 @@ export function useAuth() {
           aud: "authenticated",
           role: "authenticated",
           created_at: new Date().toISOString(),
-        } as any;
+        } as unknown as import("@supabase/supabase-js").User;
       }
       try {
         const {
