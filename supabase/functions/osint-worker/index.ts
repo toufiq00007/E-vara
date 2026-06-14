@@ -47,6 +47,7 @@ serve(async (req) => {
       const dehashedApiKey = Deno.env.get('DEHASHED_API_KEY');
       const dehashedEmail = Deno.env.get('DEHASHED_EMAIL');
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let findings: any[] = [];
 
       if (hibpApiKey) {
@@ -60,6 +61,7 @@ serve(async (req) => {
         
         if (hibpRes.ok) {
           const hibpData = await hibpRes.json();
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           findings = findings.concat(hibpData.map((b: any) => ({
             source: b.Name,
             severity: b.DataClasses.includes('Passwords') ? 'high' : 'medium',
@@ -83,6 +85,7 @@ serve(async (req) => {
         if (dehashedRes.ok) {
           const dehashedData = await dehashedRes.json();
           if (dehashedData.entries) {
+             // eslint-disable-next-line @typescript-eslint/no-explicit-any
              findings = findings.concat(dehashedData.entries.map((e: any) => ({
                source: e.database_name || 'Dark Web Dump',
                severity: e.password ? 'high' : 'medium',
@@ -104,7 +107,8 @@ serve(async (req) => {
       // Ensure jobs array is typed as jsonb
       const { error: insertError } = await supabase
         .from('identity_breaches')
-        .insert(findings.map((f: Record<string, any>) => ({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .insert(findings.map((f: any) => ({
           user_id: job.user_id,
           identity_id: job.identity_id,
           source_name: f.source,
