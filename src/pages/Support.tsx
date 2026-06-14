@@ -38,12 +38,6 @@ const SupportPage = () => {
       return array[0].toString(16).padStart(8, "0").toUpperCase();
     } catch (e) {
       return "GUEST-" + Date.now().toString(36).slice(-4).toUpperCase();
-
-    try {
-      return crypto.randomUUID().slice(0, 8).toUpperCase();
-    } catch {
-      return Math.random().toString(36).substring(7).toUpperCase();
-
     }
   }, []);
 

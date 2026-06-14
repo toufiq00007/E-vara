@@ -23,7 +23,7 @@ export async function isRateLimited(
     return {
       allowed: Boolean(data),
       currentLimit: maxRequests,
-,    };
+    };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Rate limiting engine error:", errorMessage);
