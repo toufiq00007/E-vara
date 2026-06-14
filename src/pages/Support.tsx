@@ -25,13 +25,14 @@ const SupportPage = () => {
     },
   ]);
 
-  const sessionId = useMemo(
-    () => crypto.randomUUID().slice(0, 8).toUpperCase(),
-
-    () => Math.random().toString(36).substring(7).toUpperCase(),
-
-    [],
-  );
+  const sessionId = useMemo(() => {
+    try {
+      return crypto.randomUUID().slice(0, 8).toUpperCase();
+    } catch {
+      // eslint-disable-next-line react-hooks/purity
+      return Math.random().toString(36).substring(7).toUpperCase();
+    }
+  }, []);
 
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
