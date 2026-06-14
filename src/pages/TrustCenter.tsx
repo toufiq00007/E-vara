@@ -39,6 +39,7 @@ export const handleDataExport = async (userId: string) => {
 const TrustCenter = () => {
   const { user } = useAuth();
   const [isExporting, setIsExporting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const onExportClick = async () => {
     if (!user) {
@@ -73,6 +74,53 @@ const TrustCenter = () => {
     }
   };
 
+  const onDeleteClick = async () => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to delete your identity.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      toast({
+        title: "Deletion Initiated",
+        description:
+          "Your request has been logged. Account will be removed after 30 days.",
+      });
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const res = await fetch("/functions/v1/cleanup-deletions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify({}),
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.error?.message || "Deletion request failed");
+      }
+    } catch (error: any) {
+      console.error("Deletion error:", error);
+      toast({
+        title: "Deletion Failed",
+        description: error.message || "An error occurred.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
@@ -87,14 +135,23 @@ const TrustCenter = () => {
               consent history transparency.
             </p>
           </div>
-          <Button
-            onClick={onExportClick}
-            disabled={isExporting}
-            className="font-semibold shadow-md"
-          >
-            <Download className="mr-2 h-4 w-4" />{" "}
-            {isExporting ? "Exporting..." : "EXPORT MY DATA"}
-          </Button>
+          <div className="flex gap-4">
+            <Button
+              onClick={onExportClick}
+              disabled={isExporting}
+              className="font-semibold shadow-md"
+            >
+              <Download className="mr-2 h-4 w-4" />{" "}
+              {isExporting ? "Exporting..." : "EXPORT MY DATA"}
+            </Button>
+            <Button
+              onClick={onDeleteClick}
+              disabled={isDeleting}
+              className="font-semibold shadow-md bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? "Deleting..." : "DELETE MY IDENTITY"}
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3 mb-10">
