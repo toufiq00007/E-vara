@@ -43,20 +43,24 @@ export default defineConfig(() => ({
     chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ["react", "react-dom", "react-router-dom"],
-          ui: [
-            "@radix-ui/react-dialog",
-            "@radix-ui/react-slot",
-            "lucide-react",
-            "framer-motion",
-            "gsap",
-          ],
-          three: ["three", "@react-three/fiber", "@react-three/drei"],
-          supabase: ["@supabase/supabase-js"],
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            if (id.includes("react")) return "react";
+            if (id.includes("three")) return "three";
+            if (id.includes("supabase")) return "supabase";
+            if (
+              id.includes("@radix-ui") ||
+              id.includes("lucide-react") ||
+              id.includes("framer-motion") ||
+              id.includes("gsap")
+            ) {
+              return "ui";
+            }
+            return "vendor";
+          }
         },
-        experimentalMinChunkSize: 10_000,
       },
     },
   },
+
 }));
