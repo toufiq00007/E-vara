@@ -1,4 +1,4 @@
-# E-VARA: Executive Identity Intelligence Platform
+# E-VARA : Executive Identity Intelligence Platform
 
 [![Project Status: Active](https://img.shields.io/badge/Project%20Status-Active-brightgreen.svg)]()
 [![Security: Enterprise Grade](https://img.shields.io/badge/Security-Enterprise%20Grade-blue.svg)]()
